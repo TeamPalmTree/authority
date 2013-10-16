@@ -7,8 +7,11 @@ desktop.ini
 /cache/*/*
 /config/crypt.php
 /config/db.php
-/config/*/db.php
-/config/*/migrations.php
 /config/auth.php
 /config/opauth.php
 /config/simpleauth.php
+/config/*/db.php
+/config/*/migrations.php
+/config/*/auth.php
+/config/*/opauth.php
+/config/*/simpleauth.php
