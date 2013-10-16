@@ -9,5 +9,6 @@ desktop.ini
 /config/db.php
 /config/*/db.php
 /config/*/migrations.php
-/config/cloudcast.php
-/config/liquidsoap.php
+/config/auth.php
+/config/opauth.php
+/config/simpleauth.php
