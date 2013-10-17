@@ -1,4 +1,5 @@
-<a href="/login/facebook">LOGIN</a>
+<a href="/login/login/facebook">LOGIN</a>
 <br /><br />
 <?php echo $message; ?>
-<?php echo $opauth; ?>
+<?php if (isset($status)) { echo $status; } ?>
+<?php if (isset($nickname)) { echo $nickname; } ?>

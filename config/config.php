@@ -272,7 +272,6 @@ return array(
 		 */
 		'packages'  => array(
 		    'orm',
-            'less',
             'auth',
             'shared',
 		),
