@@ -8,6 +8,7 @@ desktop.ini
 /config/crypt.php
 /config/db.php
 /config/auth.php
+/config/authority.php
 /config/opauth.php
 /config/simpleauth.php
 /config/*/db.php

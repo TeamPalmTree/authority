@@ -42,7 +42,7 @@
             <label class="col-sm-3 control-label">Filter</label>
             <div class="col-sm-9">
                 <select class="form-control" data-bind="value: filter">
-                    <option>None</option>
+                    <option value="">None</option>
                     <option value="A">All Access</option>
                     <option value="D">No Access</option>
                     <option value="R">Revoke Permissions</option>
