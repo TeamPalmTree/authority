@@ -24,7 +24,7 @@
                 <tbody data-bind="foreach: filtered_users">
                     <tr data-bind="css: { 'selected': selected }, click: $root.select">
                         <td>
-                            <span data-bind="text: username"></span>
+                            <span data-bind="text: username"></span> (<span data-bind="text: email"></span>)
                             <span class="pull-right" data-bind="foreach: assigned_permission_actions">
                                 <button class="btn btn-xs btn-primary" data-bind="text: $data, click: function() { $root.assign_permission_actions($parent, $data, false); }, clickBubble: false"></button>
                             </span>

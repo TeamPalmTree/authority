@@ -3,6 +3,29 @@
 class Controller_Manager extends Controller_Standard
 {
 
+    public function router($method, $params)
+    {
+
+        /////////////
+        // FORWARD //
+        /////////////
+
+        // forward to router
+        parent::router($method, $params);
+
+        //////////////////
+        // AUTHENTICATE //
+        //////////////////
+
+        if (!Auth::has_access('authority.access'))
+        {
+            // we failed to authorize
+            Response::redirect();
+            return;
+        }
+
+    }
+
     public function action_index()
     {
         // create view
@@ -244,10 +267,10 @@ class Controller_Manager extends Controller_Standard
                         $this->assign_users_groups($from_ids, $assign_to_ids, $unassign_to_ids);
                         break;
                     case 'role_model':
-                        $this->assign_items_items('Auth_User', $from_ids, 'roles', 'Auth_Role', $assign_to_ids, $unassign_to_ids);
+                        $this->assign_items_items('users_user_roles', 'user_id', 'role_id', $from_ids, $assign_to_ids, $unassign_to_ids);
                         break;
                     case 'permission_model':
-                        $this->assign_items_items('Auth_User', $from_ids, 'permissions', 'Auth_Permission', $assign_to_ids, $unassign_to_ids);
+                        $this->assign_items_items('users_user_permissions', 'user_id', 'perms_id', $from_ids, $assign_to_ids, $unassign_to_ids, array());
                         break;
                 }
                 break;
@@ -260,10 +283,10 @@ class Controller_Manager extends Controller_Standard
                         $this->unassign_groups_users($unassign_to_ids);
                         break;
                     case 'role_model':
-                        $this->assign_items_items('Auth_Group', $from_ids, 'roles', 'Auth_Role', $assign_to_ids, $unassign_to_ids);
+                        $this->assign_items_items('users_group_roles', 'group_id', 'role_id', $from_ids, $assign_to_ids, $unassign_to_ids);
                         break;
                     case 'permission_model':
-                        $this->assign_items_items('Auth_Group', $from_ids, 'permissions', 'Auth_Permission', $assign_to_ids, $unassign_to_ids);
+                        $this->assign_items_items('users_group_permissions', 'group_id', 'perms_id', $from_ids, $assign_to_ids, $unassign_to_ids, array());
                         break;
                 }
                 break;
@@ -273,13 +296,13 @@ class Controller_Manager extends Controller_Standard
                 switch ($to_type)
                 {
                     case 'user_model':
-                        $this->unassign_items_items('users_user_roles', 'role_id', 'user_id', $from_ids, $unassign_to_ids);
+                        $this->assign_items_items('users_user_roles', 'role_id', 'user_id', $from_ids, $assign_to_ids, $unassign_to_ids);
                         break;
                     case 'group_model':
-                        $this->unassign_items_items('users_group_roles', 'role_id', 'group_id', $from_ids, $unassign_to_ids);
+                        $this->assign_items_items('users_group_roles', 'role_id', 'group_id', $from_ids, $assign_to_ids, $unassign_to_ids);
                         break;
                     case 'permission_model':
-                        $this->assign_items_items('Auth_Role', $from_ids, 'permissions', 'Auth_Permission', $assign_to_ids, $unassign_to_ids);
+                        $this->assign_items_items('users_role_permissions', 'role_id', 'perms_id', $from_ids, $assign_to_ids, $unassign_to_ids, array());
                         break;
                 }
                 break;
@@ -289,19 +312,21 @@ class Controller_Manager extends Controller_Standard
                 switch ($to_type)
                 {
                     case 'user_model':
-                        $this->unassign_items_items('users_user_permissions', 'perms_id', 'user_id', $from_ids, $unassign_to_ids);
+                        $this->assign_items_items('users_user_permissions', 'perms_id', 'user_id', $from_ids, $assign_to_ids, $unassign_to_ids);
                         break;
                     case 'group_model':
-                        $this->unassign_items_items('users_group_permissions', 'perms_id', 'group_id', $from_ids, $unassign_to_ids);
+                        $this->assign_items_items('users_group_permissions', 'perms_id', 'group_id', $from_ids, $assign_to_ids, $unassign_to_ids);
                         break;
                     case 'role_model':
-                        $this->unassign_items_items('users_role_permissions', 'perms_id', 'role_id', $from_ids, $unassign_to_ids);
+                        $this->assign_items_items('users_role_permissions', 'perms_id', 'role_id', $from_ids, $assign_to_ids, $unassign_to_ids, array());
                         break;
                 }
                 break;
 
         }
 
+        // delete all cached permissions
+        \Cache::delete_all(\Config::get('ormauth.cache_prefix', 'auth').'.permissions');
         // success
         return $this->response('SUCCESS');
 
@@ -324,56 +349,54 @@ class Controller_Manager extends Controller_Standard
     }
 
     protected function assign_items_items(
-        $from_class,
-        $from_ids,
-        $to_array,
-        $to_class,
-        $assign_to_ids,
-        $unassign_to_ids)
-    {
-        // loop over user ids
-        foreach ($from_ids as $from_id)
-        {
-            // get the from query
-            $from_query = call_user_func("\\Auth\\Model\\" . $from_class . '::query');
-            // get the from
-            $from = $from_query
-                ->related($to_array)
-                ->where('id', $from_id)
-                ->get_one();
-
-            // loop over unassignments
-            foreach ($unassign_to_ids as $unassign_to_id)
-            {
-                // get array
-                $from_to_array = &$from->$to_array;
-                unset($from_to_array[(int)$unassign_to_id]);
-            }
-
-            // loop over assignments
-            foreach ($assign_to_ids as $assign_to_id)
-                array_push($from->$to_array, call_user_func("\\Auth\\Model\\" . $to_class . '::find', $assign_to_id));
-
-            // save from
-            $from->save();
-        }
-    }
-
-    protected function unassign_items_items(
         $assignment_table,
         $from_column,
         $to_column,
         $from_ids,
-        $unassign_to_ids)
+        $assign_to_ids,
+        $unassign_to_ids,
+        $actions = null)
     {
 
-        // get the assignment delete query
-        $assignment_delete = DB::delete($assignment_table)
-            ->where($from_column, 'IN', $from_ids)
-            ->where($to_column, 'IN', $unassign_to_ids);
-        // delete assignment
-        $assignment_delete->execute();
+        ////////////////////////
+        // DELETE ASSIGNMENTS //
+        ////////////////////////
 
+        // see if we have any unassignments
+        if (count($unassign_to_ids) > 0)
+        {
+            // get the assignment delete query
+            $assignment_delete = DB::delete($assignment_table)
+                ->where($from_column, 'IN', $from_ids)
+                ->where($to_column, 'IN', $unassign_to_ids);
+            // delete assignment
+            $assignment_delete->execute();
+        }
+
+        ////////////////////////
+        // INSERT ASSIGNMENTS //
+        ////////////////////////
+
+        // loop over user ids
+        foreach ($from_ids as $from_id)
+        {
+            // loop over assignments
+            foreach ($assign_to_ids as $assign_to_id)
+            {
+                // create assignment set
+                $assignment_set = array(
+                    $from_column => $from_id,
+                    $to_column => $assign_to_id
+                );
+                // if we have actions, assign them
+                if (!is_null($actions))
+                    $assignment_set['actions'] = serialize($actions);
+                // get the assignment insert query
+                $assignment_insert = DB::insert($assignment_table)->set($assignment_set);
+                // insert assignment
+                $assignment_insert->execute();
+            }
+        }
     }
 
     protected function unassign_groups_users($unassign_to_ids)
@@ -414,6 +437,8 @@ class Controller_Manager extends Controller_Standard
                 break;
         }
 
+        // delete all cached permissions
+        \Cache::delete_all(\Config::get('ormauth.cache_prefix', 'auth').'.permissions');
         // success
         return $this->response('SUCCESS');
 
@@ -574,10 +599,12 @@ class Controller_Manager extends Controller_Standard
 
             // find existing user
             $user = \Auth\Model\Auth_User::find($object['id']);
+
             // modify user
             $user->username = $object['username'];
             $user->password = \Auth\Auth::instance()->hash_password($object['password']);
             $user->email = $object['email'];
+
             // save user
             $user->save();
             // clear password
@@ -603,6 +630,8 @@ class Controller_Manager extends Controller_Standard
         $group->name = $object['name'];
         // save group
         $group->save();
+        // flush all the cached groups
+        \Cache::delete(\Config::get('ormauth.cache_prefix', 'auth').'.groups');
         // success
         return $group;
 
@@ -620,8 +649,11 @@ class Controller_Manager extends Controller_Standard
         // set name & filter
         $role->name = $object['name'];
         $role->filter = $object['filter'];
+
         // save role
         $role->save();
+        // flush all the cached roles
+        \Cache::delete(\Config::get('ormauth.cache_prefix', 'auth').'.roles');
         // success
         return $role;
 
@@ -636,13 +668,20 @@ class Controller_Manager extends Controller_Standard
         else
             $permission = \Auth\Model\Auth_Permission::find($object['id']);
 
-        // set area, perm, and actions
+        // set area, perm
         $permission->area = $object['area'];
         $permission->permission = $object['permission'];
         $permission->description = $object['description'];
-        $permission->actions = $object['actions'];
+        // set actions
+        if (isset($object['actions']))
+            $permission->actions = $object['actions'];
+        else
+            $permission->actions = array();
+
         // save permission
         $permission->save();
+        // flush all the cached permissions
+        \Cache::delete_all(\Config::get('ormauth.cache_prefix', 'auth').'.permissions');
         // success
         return $permission;
 
@@ -677,6 +716,20 @@ class Controller_Manager extends Controller_Standard
 
         // run delete query
         DB::delete()->table($table)->where('id', 'IN', $ids)->execute();
+
+        // flush appropriate cache
+        switch ($type) {
+            case 'group_model':
+                \Cache::delete(\Config::get('ormauth.cache_prefix', 'auth').'.groups');
+                break;
+            case 'role_model':
+                \Cache::delete(\Config::get('ormauth.cache_prefix', 'auth').'.roles');
+                break;
+            case 'permission_model':
+                \Cache::delete_all(\Config::get('ormauth.cache_prefix', 'auth').'.permissions');
+                break;
+        }
+
         // success
         return $this->response('SUCCESS');
 
