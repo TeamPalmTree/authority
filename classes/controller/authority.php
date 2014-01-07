@@ -56,7 +56,7 @@ class Controller_Authority extends Controller_Template
             // get the logged in user id
             $user_id = Auth::instance()->get_user_id();
             // generate callback url with redirect
-            $callback_url =  $callback_url . $user_id[1] . '?redirect_url=' . $redirect_url;
+            $callback_url =  $callback_url . '/' . $user_id[1] . '?redirect_url=' . $redirect_url;
             // success, redirect
             return Response::redirect($callback_url, 'refresh');
 

@@ -6,17 +6,9 @@ class Controller_Manager extends Controller_Standard
     public function router($method, $params)
     {
 
-        /////////////
-        // FORWARD //
-        /////////////
-
         // forward to router
         parent::router($method, $params);
-
-        //////////////////
-        // AUTHENTICATE //
-        //////////////////
-
+        // authenticate
         if (!Auth::has_access('authority.access'))
         {
             // we failed to authorize
