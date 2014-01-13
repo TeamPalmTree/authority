@@ -7,6 +7,7 @@ desktop.ini
 /cache/*/*
 /config/crypt.php
 /config/test/db.php
+/config/staging/db.php
 /config/production/db.php
 /config/*/migrations.php
 /config/*/promoter.php
