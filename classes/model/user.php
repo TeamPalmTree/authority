@@ -1,25 +1,7 @@
 <?php
 
-class Model_User extends \Auth\Model\Auth_User
+class Model_User extends \Promoter\Model\Model_User
 {
-
-    public static function filtered($filter)
-    {
-
-        // start users query
-        $users_query = Model_User::query()
-            ->select('username', 'group_id', 'email')
-            ->order_by('username', 'ASC')
-            ->limit(1000);
-        // split up filter into commas
-        $filter_parts = explode(',', $filter);
-        // add where like conditions for each filter part
-        foreach ($filter_parts as $filter_part)
-            $users_query->or_where('username', 'LIKE', '%' . $filter_part . '%');
-        // success
-        return $users_query->get();
-
-    }
 
     public static function for_groups($ids)
     {
@@ -48,7 +30,7 @@ class Model_User extends \Auth\Model\Auth_User
         return self::for_items($ids, 'users_user_permissions', 'perms_id', $actions);
     }
 
-    private static function for_items($ids, $table_name, $column_name, &$permission_actions = null)
+    protected static function for_items($ids, $table_name, $column_name, &$permission_actions = null)
     {
         // get shared user ids
         $shared_user_ids = Model_General::shared_item_ids_for_items($ids, $table_name, 'user_id', $column_name, $permission_actions);

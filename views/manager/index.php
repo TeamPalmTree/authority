@@ -10,6 +10,7 @@
                     <!-- ko if: current_type() == 'user_model' -->
                     <button class="btn btn-default navbar-btn" title="Add User" data-bind="click: add"><span class="glyphicon glyphicon-plus"></span></button>
                     <button class="btn btn-default navbar-btn" title="Modify User" data-bind="click: modify"><span class="glyphicon glyphicon-pencil"></span></button>
+                    <button class="btn btn-default navbar-btn" title="Modify User Profile" data-bind="click: modify_user_profile"><span class="glyphicon glyphicon glyphicon-user"></span></button>
                     <button class="btn btn-default navbar-btn" title="Delete Users" data-bind="click: remove"><span class="glyphicon glyphicon-remove"></span></button>
                     <!-- /ko -->
                     <button class="btn btn-default navbar-btn" title="Select All Users" data-bind="click: function() { select_all('user_model'); }"><span class="glyphicon glyphicon-check"></span></button>

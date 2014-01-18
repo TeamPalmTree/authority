@@ -727,4 +727,51 @@ class Controller_Manager extends Controller_Standard
 
     }
 
+    public function get_user_metadatas()
+    {
+
+        // get id
+        $id = Input::get('id');
+        // get user metadata
+        $user_metadata = \Auth\Model\Auth_Metadata::query()
+            ->where('parent_id', $id)
+            ->order_by('key', 'DESC')
+            ->get();
+        // get metadata values
+        $user_metadata = array_values($user_metadata);
+        // success
+        return $this->response($user_metadata);
+
+    }
+
+    public function post_user_metadatas()
+    {
+
+        // get id & metadata
+        $id = Input::post('id');
+        $metadatas = Input::post('metadatas');
+
+        // delete all existing metadata
+        DB::delete('users_metadata')
+            ->where('parent_id', $id)
+            ->execute();
+
+        // create and save new metadata
+        foreach ($metadatas as $metadata)
+        {
+
+            // create new metadata
+            $auth_metadata = \Auth\Model\Auth_Metadata::forge($metadata);
+            // set parent id
+            $auth_metadata->parent_id = $id;
+            // save
+            $auth_metadata->save();
+
+        }
+
+        // success
+        return $this->response('SUCCESS');
+
+    }
+
 }
