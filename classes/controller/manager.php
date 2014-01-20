@@ -41,7 +41,7 @@ class Controller_Manager extends Controller_Standard
         if ($filter == '')
             return $this->response(array());
         // get filtered users
-        $users = Model_User::filtered($filter);
+        $users = \Promoter\Model\Promoter_User::filtered($filter);
         // get array values
         return $this->response(array_values($users));
 
@@ -168,7 +168,7 @@ class Controller_Manager extends Controller_Standard
 
     protected function load_group_users($ids, &$assignments)
     {
-        $assigned_users = Model_User::for_groups($ids);
+        $assigned_users = \Promoter\Model\Promoter_User::for_groups($ids);
         $assignments['assigned_users'] = array_values($assigned_users);
     }
 
@@ -190,7 +190,7 @@ class Controller_Manager extends Controller_Standard
 
     protected function load_role_users($ids, &$assignments)
     {
-        $assigned_users = Model_User::for_roles($ids);
+        $assigned_users = \Promoter\Model\Promoter_User::for_roles($ids);
         $assignments['assigned_users'] = array_values($assigned_users);
     }
 
@@ -212,7 +212,7 @@ class Controller_Manager extends Controller_Standard
     protected function load_permission_users($ids, &$assignments)
     {
         $assigned_user_permission_actions = array();
-        $assigned_users = Model_User::for_permissions($ids, $assigned_user_permission_actions);
+        $assigned_users = \Promoter\Model\Promoter_User::for_permissions($ids, $assigned_user_permission_actions);
         $assignments['assigned_users'] = array_values($assigned_users);
         $assignments['assigned_user_permission_actions'] = $assigned_user_permission_actions;
     }
