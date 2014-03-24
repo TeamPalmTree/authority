@@ -6,12 +6,8 @@ desktop.ini
 /logs/*/*/*
 /cache/*/*
 /config/crypt.php
-/config/db.php
-/config/auth.php
-/config/opauth.php
-/config/simpleauth.php
-/config/*/db.php
+/config/test/db.php
+/config/staging/db.php
+/config/production/db.php
 /config/*/migrations.php
-/config/*/auth.php
-/config/*/opauth.php
-/config/*/simpleauth.php
+/config/*/promoter.php

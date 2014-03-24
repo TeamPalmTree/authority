@@ -1,0 +1,1 @@
+<?php echo $provider; ?><?php echo $redirect; ?>
