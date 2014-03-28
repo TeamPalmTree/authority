@@ -54,7 +54,7 @@ class Model_Role extends \Auth\Model\Auth_Role
     private static function for_items($ids, $table_name, $column_name, &$permission_actions = null)
     {
         // get shared role ids
-        $shared_role_ids = Model_General::shared_item_ids_for_items($ids, $table_name, 'role_id', $column_name, $permission_actions);
+        $shared_role_ids = \Promoter\Model\Promoter_General::shared_item_ids_for_items($ids, $table_name, 'role_id', $column_name, $permission_actions);
         // verify we have some
         if (count($shared_role_ids) == 0)
             return array();

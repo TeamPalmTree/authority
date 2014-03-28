@@ -35,10 +35,10 @@
         <div class="form-group">
             <label class="sr-only" for="key">Key</label>
             <input class="form-control" data-bind="immediate: key" />
-        </div>
-        <div class="form-group">
             <label class="sr-only" for="value">Value</label>
-            <input class="form-control" data-bind="immediate: value" />
+            <textarea class="form-control" data-bind="ckeditor: value, ckeditorOptions: { enterMode : CKEDITOR.ENTER_BR, shiftEnterMode: CKEDITOR.ENTER_P }">
+                This is my textarea to be replaced with CKEditor.
+            </textarea>
         </div>
     </div>
     <!-- /ko -->

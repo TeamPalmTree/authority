@@ -85,7 +85,7 @@ class Model_Group extends \Auth\Model\Auth_Group
     {
 
         // get shared group ids
-        $shared_group_ids = Model_General::shared_item_ids_for_items($ids, $table_name, 'group_id', $column_name, $permission_actions);
+        $shared_group_ids = \Promoter\Model\Promoter_General::shared_item_ids_for_items($ids, $table_name, 'group_id', $column_name, $permission_actions);
         // verify we have some
         if (count($shared_group_ids) == 0)
             return array();

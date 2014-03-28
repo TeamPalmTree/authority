@@ -3,11 +3,19 @@
 class Controller_Manager extends Controller_Standard
 {
 
+    public function before()
+    {
+
+        // run parent before
+        parent::before();
+        // standard data setup
+        $this->site->name = 'Authority';
+
+    }
+
     public function router($method, $params)
     {
 
-        // forward to router
-        parent::router($method, $params);
         // authenticate
         if (!Auth::has_access('authority.access'))
         {
@@ -16,6 +24,9 @@ class Controller_Manager extends Controller_Standard
             return;
         }
 
+        // forward to router
+        return parent::router($method, $params);
+
     }
 
     public function action_index()
@@ -23,8 +34,6 @@ class Controller_Manager extends Controller_Standard
         // create view
         $view = View::forge('manager/index');
         // set template vars
-        $this->template->site = 'Authority';
-        $this->template->title = 'Manager';
         $this->template->section->body = $view;
     }
 
@@ -100,39 +109,39 @@ class Controller_Manager extends Controller_Standard
         // get assigned arrays
         switch ($from_type) {
 
-            case 'user_model':
-                if (is_null($to_type) or ($to_type == 'group_model'))
+            case 'User_Model':
+                if (is_null($to_type) or ($to_type == 'Group_Model'))
                     $this->load_user_groups($ids, $assignments);
-                if (is_null($to_type) or ($to_type == 'role_model'))
+                if (is_null($to_type) or ($to_type == 'Role_Model'))
                     $this->load_user_roles($ids, $assignments);
-                if (is_null($to_type) || ($to_type == 'permission_model'))
+                if (is_null($to_type) || ($to_type == 'Permission_Model'))
                     $this->load_user_permissions($ids, $assignments);
                 break;
 
-            case 'group_model':
-                if (is_null($to_type) or ($to_type == 'user_model'))
+            case 'Group_Model':
+                if (is_null($to_type) or ($to_type == 'User_Model'))
                     $this->load_group_users($ids, $assignments);
-                if (is_null($to_type) or ($to_type == 'role_model'))
+                if (is_null($to_type) or ($to_type == 'Role_Model'))
                     $this->load_group_roles($ids, $assignments);
-                if (is_null($to_type) or ($to_type == 'permission_model'))
+                if (is_null($to_type) or ($to_type == 'Permission_Model'))
                     $this->load_group_permissions($ids, $assignments);
                 break;
 
-            case 'role_model':
-                if (is_null($to_type) or ($to_type == 'user_model'))
+            case 'Role_Model':
+                if (is_null($to_type) or ($to_type == 'User_Model'))
                     $this->load_role_users($ids, $assignments);
-                if (is_null($to_type) or ($to_type == 'group_model'))
+                if (is_null($to_type) or ($to_type == 'Group_Model'))
                     $this->load_role_groups($ids, $assignments);
-                if (is_null($to_type) or ($to_type == 'permission_model'))
+                if (is_null($to_type) or ($to_type == 'Permission_Model'))
                     $this->load_role_permissions($ids, $assignments);
                 break;
 
-            case 'permission_model':
-                if (is_null($to_type) or ($to_type == 'user_model'))
+            case 'Permission_Model':
+                if (is_null($to_type) or ($to_type == 'User_Model'))
                     $this->load_permission_users($ids, $assignments);
-                if (is_null($to_type) or ($to_type == 'group_model'))
+                if (is_null($to_type) or ($to_type == 'Group_Model'))
                     $this->load_permission_groups($ids, $assignments);
-                if (is_null($to_type) or ($to_type == 'role_model'))
+                if (is_null($to_type) or ($to_type == 'Role_Model'))
                     $this->load_permission_roles($ids, $assignments);
                 break;
 
@@ -251,65 +260,65 @@ class Controller_Manager extends Controller_Standard
         switch ($from_type)
         {
 
-            case 'user_model':
+            case 'User_Model':
                 // switch on to type
                 switch ($to_type)
                 {
-                    case 'group_model':
+                    case 'Group_Model':
                         $this->assign_users_groups($from_ids, $assign_to_ids, $unassign_to_ids);
                         break;
-                    case 'role_model':
+                    case 'Role_Model':
                         $this->assign_items_items('users_user_roles', 'user_id', 'role_id', $from_ids, $assign_to_ids, $unassign_to_ids);
                         break;
-                    case 'permission_model':
+                    case 'Permission_Model':
                         $this->assign_items_items('users_user_permissions', 'user_id', 'perms_id', $from_ids, $assign_to_ids, $unassign_to_ids, array());
                         break;
                 }
                 break;
 
-            case 'group_model':
+            case 'Group_Model':
                 // switch on to type
                 switch ($to_type)
                 {
-                    case 'user_model':
+                    case 'User_Model':
                         $this->unassign_groups_users($unassign_to_ids);
                         break;
-                    case 'role_model':
+                    case 'Role_Model':
                         $this->assign_items_items('users_group_roles', 'group_id', 'role_id', $from_ids, $assign_to_ids, $unassign_to_ids);
                         break;
-                    case 'permission_model':
+                    case 'Permission_Model':
                         $this->assign_items_items('users_group_permissions', 'group_id', 'perms_id', $from_ids, $assign_to_ids, $unassign_to_ids, array());
                         break;
                 }
                 break;
 
-            case 'role_model':
+            case 'Role_Model':
                 // switch on to type
                 switch ($to_type)
                 {
-                    case 'user_model':
+                    case 'User_Model':
                         $this->assign_items_items('users_user_roles', 'role_id', 'user_id', $from_ids, $assign_to_ids, $unassign_to_ids);
                         break;
-                    case 'group_model':
+                    case 'Group_Model':
                         $this->assign_items_items('users_group_roles', 'role_id', 'group_id', $from_ids, $assign_to_ids, $unassign_to_ids);
                         break;
-                    case 'permission_model':
+                    case 'Permission_Model':
                         $this->assign_items_items('users_role_permissions', 'role_id', 'perms_id', $from_ids, $assign_to_ids, $unassign_to_ids, array());
                         break;
                 }
                 break;
 
-            case 'permission_model':
+            case 'Permission_Model':
                 // switch on to type
                 switch ($to_type)
                 {
-                    case 'user_model':
+                    case 'User_Model':
                         $this->assign_items_items('users_user_permissions', 'perms_id', 'user_id', $from_ids, $assign_to_ids, $unassign_to_ids);
                         break;
-                    case 'group_model':
+                    case 'Group_Model':
                         $this->assign_items_items('users_group_permissions', 'perms_id', 'group_id', $from_ids, $assign_to_ids, $unassign_to_ids);
                         break;
-                    case 'role_model':
+                    case 'Role_Model':
                         $this->assign_items_items('users_role_permissions', 'perms_id', 'role_id', $from_ids, $assign_to_ids, $unassign_to_ids, array());
                         break;
                 }
@@ -418,13 +427,13 @@ class Controller_Manager extends Controller_Standard
         // switch on from type
         switch ($from_type)
         {
-            case 'user_model':
+            case 'User_Model':
                 $this->assign_items_permission_action('Auth_User', 'user_id', $from_ids, 'userpermission', 'Auth_Userpermission', $perms_ids, $permission_action, $assign);
                 break;
-            case 'group_model':
+            case 'Group_Model':
                 $this->assign_items_permission_action('Auth_Group', 'group_id', $from_ids, 'grouppermission', 'Auth_Grouppermission', $perms_ids, $permission_action, $assign);
                 break;
-            case 'role_model':
+            case 'Role_Model':
                 $this->assign_items_permission_action('Auth_Role', 'role_id', $from_ids, 'rolepermission', 'Auth_Rolepermission', $perms_ids, $permission_action, $assign);
                 break;
         }
@@ -550,16 +559,16 @@ class Controller_Manager extends Controller_Standard
 
         switch ($type)
         {
-            case 'user_model':
+            case 'User_Model':
                 $object = $this->add_modify_user($object);
                 break;
-            case 'group_model':
+            case 'Group_Model':
                 $object = $this->add_modify_group($object);
                 break;
-            case 'role_model':
+            case 'Role_Model':
                 $object = $this->add_modify_role($object);
                 break;
-            case 'permission_model':
+            case 'Permission_Model':
                 $object = $this->add_modify_permission($object);
                 break;
         }
@@ -692,16 +701,16 @@ class Controller_Manager extends Controller_Standard
 
         // get table
         switch ($type) {
-            case 'user_model':
+            case 'User_Model':
                 $table = 'users';
                 break;
-            case 'group_model':
+            case 'Group_Model':
                 $table = 'users_groups';
                 break;
-            case 'role_model':
+            case 'Role_Model':
                 $table = 'users_roles';
                 break;
-            case 'permission_model':
+            case 'Permission_Model':
                 $table = 'users_permissions';
                 break;
         }
@@ -711,13 +720,13 @@ class Controller_Manager extends Controller_Standard
 
         // flush appropriate cache
         switch ($type) {
-            case 'group_model':
+            case 'Group_Model':
                 \Cache::delete(\Config::get('ormauth.cache_prefix', 'auth').'.groups');
                 break;
-            case 'role_model':
+            case 'Role_Model':
                 \Cache::delete(\Config::get('ormauth.cache_prefix', 'auth').'.roles');
                 break;
-            case 'permission_model':
+            case 'Permission_Model':
                 \Cache::delete_all(\Config::get('ormauth.cache_prefix', 'auth').'.permissions');
                 break;
         }
