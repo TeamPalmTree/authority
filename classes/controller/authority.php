@@ -1,6 +1,6 @@
 <?php
 
-class Controller_Authority extends Controller_Template
+class Controller_Authority extends Controller_Standard
 {
 
     public function action_login()
@@ -13,15 +13,9 @@ class Controller_Authority extends Controller_Template
         ));
 
         // create login request for requested provider
-        Auth_Opauth::forge(array('Strategy' => array(
+        Authority_Opauth::forge(array('Strategy' => array(
             'Facebook' => array('state' => $state),
         )));
-
-        // create view
-        $view = View::forge('authority/index');
-        // set template vars
-        $this->template->title = 'Index';
-        $this->template->content = $view;
 
     }
 
@@ -36,9 +30,9 @@ class Controller_Authority extends Controller_Template
             ////////////////
 
             // get the Opauth object
-            $opauth = Auth_Opauth::forge(false);
+            $opauth = Authority_Opauth::forge(false);
             // and process the callback
-            $opauth->login_or_register();
+            $user_id = $opauth->get_or_create();
 
             //////////////
             // REDIRECT //
@@ -53,10 +47,8 @@ class Controller_Authority extends Controller_Template
             // restore session vars
             $callback_url = $state['callback_url'];
             $redirect_url = urlencode($state['redirect_url']);
-            // get the logged in user id
-            $user_id = Auth::instance()->get_user_id();
             // generate callback url with redirect
-            $callback_url =  $callback_url . '/' . $user_id[1] . '?redirect_url=' . $redirect_url;
+            $callback_url =  $callback_url . '/' . $user_id . '?redirect_url=' . $redirect_url;
             // success, redirect
             return Response::redirect($callback_url, 'refresh');
 
@@ -70,7 +62,7 @@ class Controller_Authority extends Controller_Template
             $view->message = $e->getMessage();
             // set template vars
             $this->template->title = 'Index';
-            $this->template->content = $view;
+            $this->template->section->body = $view;
 
         }
 
